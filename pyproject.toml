@@ -29,7 +29,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --cov=. --cov-report=term-missing --cov-report=html"
+addopts = "-v"
 markers = [
     "unit: fast unit tests (no external dependencies)",
     "integration: tests requiring real services (Kafka, Snowflake)",

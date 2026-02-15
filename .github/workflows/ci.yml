@@ -58,7 +58,7 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Run unit tests
-        run: pytest tests/unit -m "not slow" -v
+        run: pytest tests/unit -m "not slow" -v --cov=. --cov-report=term-missing
 
   # ── Job 3: Validate Airflow DAGs ───────────────────────────────
   validate-dags:
