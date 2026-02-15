@@ -1,0 +1,41 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy-staging:
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Sync Spark jobs to S3
+        run: |
+          aws s3 sync processing/spark/jobs/ \
+            s3://${{ secrets.STAGING_BUCKET }}/spark-jobs/ \
+            --delete
+
+      - name: Deploy Airflow DAGs
+        run: |
+          aws s3 sync orchestration/dags/ \
+            s3://${{ secrets.AIRFLOW_STAGING_DAGS_BUCKET }}/dags/ \
+            --delete
+
+      - name: Run dbt staging deployment
+        env:
+          DBT_SNOWFLAKE_PASSWORD: ${{ secrets.STAGING_SNOWFLAKE_PASSWORD }}
+        run: |
+          pip install dbt-snowflake
+          cd dbt
+          dbt run --target staging --full-refresh
+          dbt test --target staging

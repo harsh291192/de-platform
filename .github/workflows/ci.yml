@@ -1,0 +1,115 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+
+  # ── Job 1: Code Quality ─────────────────────────────────────────
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run Black (format check)
+        run: black --check ingestion/ processing/ orchestration/ data_quality/
+
+      - name: Run isort (import sort check)
+        run: isort --check-only --diff ingestion/ processing/ orchestration/
+
+      - name: Run flake8 (lint)
+        run: flake8 ingestion/ processing/ orchestration/ data_quality/
+
+      - name: Run mypy (type check)
+        run: mypy ingestion/ processing/ --ignore-missing-imports
+
+
+  # ── Job 2: Unit Tests ───────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run unit tests
+        run: pytest tests/unit -m "not slow" -v --cov=. --cov-report=xml
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
+
+
+  # ── Job 3: Validate Airflow DAGs ───────────────────────────────
+  validate-dags:
+    name: Validate Airflow DAGs
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Airflow
+        run: pip install apache-airflow
+
+      - name: Validate DAGs parse correctly
+        run: pytest orchestration/tests/test_dag_validation.py -v
+
+
+  # ── Job 4: dbt Compilation Check ───────────────────────────────
+  dbt-compile:
+    name: dbt Compile Check
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dbt
+        run: pip install dbt-snowflake
+
+      - name: dbt compile (no DB connection needed)
+        run: |
+          cd dbt
+          dbt compile --profiles-dir ./.github/dbt-profiles --target ci
+
+
+  # ── Final gate: all must pass ───────────────────────────────────
+  all-checks:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, validate-dags, dbt-compile]
+    steps:
+      - run: echo "✅ All checks passed — safe to merge!"

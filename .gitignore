@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Secrets & Environment — NEVER COMMIT THESE
+.env
+*.env
+secrets/
+*credentials*
+*secret*
+!.secrets.baseline
+profiles.yml          # dbt profiles (has passwords)
+*.pem
+*.key
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb              # NOTE: we keep notebooks in /notebooks only
+
+# Spark
+derby.log
+metastore_db/
+spark-warehouse/
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# Airflow
+airflow/logs/
+airflow/plugins/__pycache__/
+
+# Data files (store in S3, not git)
+*.csv
+*.parquet
+*.json
+!tests/fixtures/     # EXCEPT test fixtures
+!dbt/seeds/          # EXCEPT dbt seed files
+*.avro
+*.orc
+
+# AWS
+.aws/credentials
+
+# Docker
+.docker/
+
+# IDE
+.antigravity/settings.json    # personal, not shared — but team settings.json IS committed
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store              # macOS
+Thumbs.db              # Windows
+desktop.ini
+
+# Terraform state (use remote state)
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl

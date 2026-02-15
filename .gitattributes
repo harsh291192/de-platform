@@ -1,0 +1,27 @@
+# Auto-detect text files and enforce LF line endings
+* text=auto eol=lf
+
+# Explicitly declare text files
+*.py text eol=lf
+*.sql text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.txt text eol=lf
+*.env.example text eol=lf
+Makefile text eol=lf
+
+# Shell scripts always LF
+*.sh text eol=lf
+
+# Binary files — no line-ending conversion
+*.parquet binary
+*.avro binary
+*.png binary
+*.jpg binary
+*.zip binary
+*.gz binary
+*.tgz binary
