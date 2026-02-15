@@ -10,7 +10,6 @@ env:
   PYTHON_VERSION: "3.12"
 
 jobs:
-
   # ── Job 1: Code Quality ─────────────────────────────────────────
   lint:
     name: Lint & Format Check
@@ -22,7 +21,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          cache: "pip"
 
       - name: Install dev dependencies
         run: pip install -r requirements-dev.txt
@@ -37,8 +36,7 @@ jobs:
         run: flake8 ingestion/ processing/ orchestration/ data_quality/
 
       - name: Run mypy (type check)
-        run: mypy ingestion/ processing/ --ignore-missing-imports
-
+        run: mypy ingestion/ processing/ --ignore-missing-imports --explicit-package-bases
 
   # ── Job 2: Unit Tests ───────────────────────────────────────────
   unit-tests:
@@ -52,7 +50,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -67,7 +65,6 @@ jobs:
         with:
           file: ./coverage.xml
           fail_ci_if_error: true
-
 
   # ── Job 3: Validate Airflow DAGs ───────────────────────────────
   validate-dags:
@@ -88,7 +85,6 @@ jobs:
       - name: Validate DAGs parse correctly
         run: pytest orchestration/tests/test_dag_validation.py -v
 
-
   # ── Job 4: dbt Compilation Check ───────────────────────────────
   dbt-compile:
     name: dbt Compile Check
@@ -104,7 +100,6 @@ jobs:
         run: |
           cd dbt
           dbt compile --profiles-dir ./.github/dbt-profiles --target ci
-
 
   # ── Final gate: all must pass ───────────────────────────────────
   all-checks:
