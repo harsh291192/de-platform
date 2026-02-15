@@ -1,0 +1,14 @@
+# CI dbt profile — uses env vars, no real DB connection needed for compile
+de_platform:
+  target: ci
+  outputs:
+    ci:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'dummy_account') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'dummy_user') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD', 'dummy_password') }}"
+      role: transformer
+      database: analytics
+      warehouse: compute_wh
+      schema: public
+      threads: 1
