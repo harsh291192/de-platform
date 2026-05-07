@@ -23,6 +23,9 @@ htmlcov/
 secrets/
 *credentials*
 *secret*
+infrastructure/keys/
+*.p8
+*.log
 !.secrets.baseline
 profiles.yml          # dbt profiles (has passwords)
 *.pem
