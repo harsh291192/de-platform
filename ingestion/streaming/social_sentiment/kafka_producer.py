@@ -2,6 +2,7 @@ import json
 import random
 import time
 from datetime import datetime
+from typing import Any
 
 from confluent_kafka import Producer
 from faker import Faker
@@ -20,7 +21,7 @@ fake = Faker()
 producer = Producer(KAFKA_CONFIG)
 
 
-def delivery_report(err, msg):
+def delivery_report(err: Any, msg: Any) -> None:
     """
     Callback function: Kafka calls this when a message is successfully sent
     or when it fails. This is how we get "Live Logs" of the success.
@@ -35,7 +36,7 @@ def delivery_report(err, msg):
         )
 
 
-def generate_tweet():
+def generate_tweet() -> dict:
     """Generates a synthetic tweet-like message using Faker"""
     return {
         "user": fake.user_name(),

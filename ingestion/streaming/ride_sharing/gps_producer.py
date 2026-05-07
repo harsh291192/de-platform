@@ -2,6 +2,7 @@ import datetime
 import logging
 import random
 import time
+from typing import Any
 
 from confluent_kafka import SerializingProducer
 from confluent_kafka.schema_registry import SchemaRegistryClient
@@ -56,7 +57,7 @@ producer_conf = {
 producer = SerializingProducer(producer_conf)
 
 
-def delivery_report(err, msg):
+def delivery_report(err: Any, msg: Any) -> None:
     if err is not None:
         logger.error(f"Delivery failed: {err}")
     else:

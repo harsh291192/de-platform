@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, current_timestamp, from_json, udf
 from pyspark.sql.types import DoubleType, StringType, StructField, StructType
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -13,7 +13,7 @@ load_dotenv()
 analyzer = SentimentIntensityAnalyzer()
 
 
-def get_sentiment_score(text):
+def get_sentiment_score(text: str) -> float:
     if not text:
         return 0.0
     scores = analyzer.polarity_scores(text)
@@ -83,7 +83,7 @@ sentiment_df = (
 
 
 # 7. Function to write each batch to Snowflake
-def write_to_snowflake(batch_df, batch_id):
+def write_to_snowflake(batch_df: DataFrame, batch_id: int) -> None:
     if batch_df.count() > 0:
         print(f"❄️ Writing batch {batch_id} to Snowflake...")
         batch_df.write.format("snowflake").options(**sf_options).option(
