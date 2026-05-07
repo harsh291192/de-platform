@@ -76,8 +76,8 @@ jobs:
       - name: Install Airflow
         run: pip install apache-airflow
 
-      - name: Install pytest # ← ADD THIS STEP
-        run: pip install pytest
+      - name: Install pytest
+        run: pip install pytest pytest-cov
 
       - name: Validate DAGs parse correctly
         run: pytest orchestration/tests/test_dag_validation.py -v
